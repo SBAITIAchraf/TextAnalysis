@@ -26,18 +26,23 @@ class AdvancedTextAnalyzer():
 
     #Calculer les tf et idf des mots du text
     def preprocess(sentences):
-        total = 0
-        idf = defaultdict(int)
-        tf = defaultdict(list)
-        nltk.download("stopwords")
-        stop_wrds = set(stopwords.words("english"))
+        clean_sentences = []
 
-        for i, sentence in enumerate(sentences):
+        nltk.download("stopwords")
+        stp_word = set(stopwords.words("english"))
+        for sentence in sentences:
+            clean_sentence = []
             words = sentence.split(" ")
             for word in words:
-                if word not in stop_wrds:
-                    total += 1
-                    
+                
+                #Enlever la ponctuation
+                if word[-1] in string.punctuation:
+                    word = word[:-1]
+
+                if word not in stp_word:
+                    clean_sentence.append(word)
+
+
 
 
     def Analyse_text(self):
