@@ -7,7 +7,17 @@ from collections import defaultdict
 
 class AdvancedTextAnalyzer():
     def __init__(self,text):
-        self.text=text
+        self.__text=re.sub(r'\s+', ' ', text)
+        #Extraction des phrases cette méthode de split en donnant le pattern je l'ai testé ça marche
+        self.__sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', self.text) 
+
+    #Getters
+    @property
+    def text(self):
+        return self.__text
+    @property
+    def sentences(self):
+        return self.__sentences
 
     def calculate_sentence_similarity(phrase1,phrase2):
         score=0
@@ -15,12 +25,10 @@ class AdvancedTextAnalyzer():
         return score
 
     def Analyse_text(self):
-        text = re.sub(r'\s+', ' ', text)
-        sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)  #Extraction des phrases cette méthode de split en donnant le pattern je l'ai testé ça marche 
             # initialisation du graphe
         graph = defaultdict(list)
-        for i, sentence_i in enumerate(sentences):
-            for j, sentence_j in enumerate(sentences):
+        for i, sentence_i in enumerate(self.sentences):
+            for j, sentence_j in enumerate(self.sentences):
                 if i != j:
                 # Il faut qu'on implemente cette fonction nommée calculate..... pour calculer similarity entre deux phrases en se basant sur l'une des méthodes
                     similarity = self.calculate_sentence_similarity(sentence_i, sentence_j)
@@ -28,8 +36,8 @@ class AdvancedTextAnalyzer():
                 
     
                     if similarity > 0.2:  # comment va t-on determiner les phraes adjoints dans le graph ,par excemple on met un seuil pour le score si le score depasse ce seuil alors on va connecter les deux nodesc a d les deux phrases
-                        graph[i].append(j)
+                        graph[i].append((similarity ,j))
     
-        return graph, sentences
+        return graph
 
     

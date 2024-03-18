@@ -6,8 +6,9 @@ from collections import defaultdict
 class Language_detector():
     def __init__(self,text):
         self.text=text
-
+        self.lang = detect(text)
+"""
     def detection_de_la_langue(self):
         langue=detect(self.text)
-        return langue
+        return langue"""
         
