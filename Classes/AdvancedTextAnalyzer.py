@@ -1,9 +1,9 @@
 from langdetect import detect
 import re
 from collections import defaultdict
-
-
-
+import nltk
+from nltk.corpus import stopwords
+import string
 
 class AdvancedTextAnalyzer():
     def __init__(self,text):
@@ -21,8 +21,24 @@ class AdvancedTextAnalyzer():
 
     def calculate_sentence_similarity(phrase1,phrase2):
         score=0
-        #on va l 'implementer en se basant sur la methode qui prend tf et idf des mots de chaque phrase
+        #on va l'implementer en se basant sur la methode qui prend tf et idf des mots de chaque phrase
         return score
+
+    #Calculer les tf et idf des mots du text
+    def preprocess(sentences):
+        total = 0
+        idf = defaultdict(int)
+        tf = defaultdict(list)
+        nltk.download("stopwords")
+        stop_wrds = set(stopwords.words("english"))
+
+        for i, sentence in enumerate(sentences):
+            words = sentence.split(" ")
+            for word in words:
+                if word not in stop_wrds:
+                    total += 1
+                    
+
 
     def Analyse_text(self):
             # initialisation du graphe
