@@ -1,4 +1,4 @@
 import string
+import Classes.AdvancedTextAnalyzer as advanced
 
-punct = 'hi'
-print(punct[:-1])
+hj = advanced.AdvancedTextAnalyzer

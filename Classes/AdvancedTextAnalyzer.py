@@ -11,7 +11,8 @@ class AdvancedTextAnalyzer():
     def __init__(self,text):
         self.__text=re.sub(r'\s+', ' ', text)
         #Extraction des phrases cette méthode de split en donnant le pattern je l'ai testé ça marche
-        self.__sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', self.text) 
+        self.__sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', self.text)
+        self.idf = calculateIdf(self.__sentences)
 
     #Getters
     @property
@@ -21,60 +22,11 @@ class AdvancedTextAnalyzer():
     def sentences(self):
         return self.__sentences
 
-    def calculate_tf_idf(sentences):
-        total = len(sentences)
-
-        # Nembre de phrases contenant un mot
-        freq = {}
-
-        Idf = {}
-
-        tf = {}
-
-        nltk.download("stopwords")
-        stp_word = set(stopwords.words("english"))
-
-        # calcule des frequences de chaque mot
-        for i in range(len(sentences)):
-            words = sentences[i].split(" ")
-            for word in words:
-
-                #Enlever la ponctuation
-                if word[-1] in string.punctuation:
-                    word = word[:-1]
-
-                # Rendre tous les lettres en minuscule
-                word = word.lower()
-                
-                if word not in stp_word:
-                    if word not in freq:
-                        freq[word] = 1
-
-                        # Calculer le nembre de phrases contenant word
-                        for j in range(len(sentences)):
-                            if j!=i:
-                                lowr_sntnce = sentences[j].lower()
-                                if word in lowr_sntnce:
-                                    freq[word] +=1
-
-                    # Calculer la frequence du termes dans chaque phrase
-                    if word not in tf:
-                        tf[word] = np.zeros(len(sentences))
-                        lowr_sntnce = sentences[i].lower()
-                        tf[word][i] = lowr_sntnce.count(word)
-
-                        for j in range(len(sentences)):
-                            if j!=i:
-                                if word in sentences[j]:
-                                    lowr_sntnce = sentences[j].lower()
-                                    tf[word][j] = lowr_sntnce.count(word)
-        #Calcule de IDF
-        for word in freq:
-            Idf[word] = math.log(total/freq[word])
-
-        return Idf, tf
         
-
+    def tf(terme, sentence):
+        lowr_sntce = sentence.lower()
+        lwr_terme = terme.lower()
+        return lowr_sntce.count(lwr_terme)
 
     def calculate_sentence_similarity(phrase1,phrase2):
         score=0
@@ -101,4 +53,41 @@ class AdvancedTextAnalyzer():
     
         return graph
 
-    
+def calculateIdf(sentences):
+    total = len(sentences)
+
+    # Nembre de phrases contenant un mot
+    freq = {}
+
+    Idf = {}
+
+    nltk.download("stopwords")
+    stp_word = set(stopwords.words("english"))
+
+    # calcule des frequences de chaque mot
+    for i in range(len(sentences)):
+        words = sentences[i].split(" ")
+        for word in words:
+
+            #Enlever la ponctuation
+            if word[-1] in string.punctuation:
+                word = word[:-1]
+
+            # Rendre tous les lettres en minuscule
+            word = word.lower()
+            
+            if word not in stp_word:
+                if word not in freq:
+                    freq[word] = 1
+
+                    # Calculer le nembre de phrases contenant word
+                    for j in range(len(sentences)):
+                        if j!=i:
+                            lowr_sntnce = sentences[j].lower()
+                            if word in lowr_sntnce:
+                                freq[word] +=1
+    #Calcule de IDF
+    for word in freq:
+        Idf[word] = math.log(total/freq[word])
+
+    return Idf
