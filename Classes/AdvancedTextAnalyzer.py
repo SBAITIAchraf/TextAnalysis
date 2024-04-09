@@ -5,6 +5,7 @@ import nltk
 from nltk.corpus import stopwords
 import string
 import math
+import numpy as np
 
 class AdvancedTextAnalyzer():
     def __init__(self,text):
@@ -20,13 +21,15 @@ class AdvancedTextAnalyzer():
     def sentences(self):
         return self.__sentences
 
-    def calculateIdf(sentences):
+    def calculate_tf_idf(sentences):
         total = len(sentences)
 
-        # Nembre se phrases contenant un mot
+        # Nembre de phrases contenant un mot
         freq = {}
 
         Idf = {}
+
+        tf = {}
 
         nltk.download("stopwords")
         stp_word = set(stopwords.words("english"))
@@ -50,10 +53,27 @@ class AdvancedTextAnalyzer():
                         # Calculer le nembre de phrases contenant word
                         for j in range(len(sentences)):
                             if j!=i:
-                                if word in sentences[j]:
+                                lowr_sntnce = sentences[j].lower()
+                                if word in lowr_sntnce:
                                     freq[word] +=1
+
+                    # Calculer la frequence du termes dans chaque phrase
+                    if word not in tf:
+                        tf[word] = np.zeros(len(sentences))
+                        lowr_sntnce = sentences[i].lower()
+                        tf[word][i] = lowr_sntnce.count(word)
+
+                        for j in range(len(sentences)):
+                            if j!=i:
+                                if word in sentences[j]:
+                                    lowr_sntnce = sentences[j].lower()
+                                    tf[word][j] = lowr_sntnce.count(word)
+        #Calcule de IDF
         for word in freq:
             Idf[word] = math.log(total/freq[word])
+
+        return Idf, tf
+        
 
 
     def calculate_sentence_similarity(phrase1,phrase2):
@@ -61,23 +81,6 @@ class AdvancedTextAnalyzer():
         #on va l'implementer en se basant sur la methode qui prend tf et idf des mots de chaque phrase
         return score
 
-    #Calculer les tf et idf des mots du text
-    def preprocess(sentences):
-        clean_sentences = []
-
-        nltk.download("stopwords")
-        stp_word = set(stopwords.words("english"))
-        for sentence in sentences:
-            clean_sentence = []
-            words = sentence.split(" ")
-            for word in words:
-                
-                #Enlever la ponctuation
-                if word[-1] in string.punctuation:
-                    word = word[:-1]
-
-                if word not in stp_word:
-                    clean_sentence.append(word)
 
 
 
