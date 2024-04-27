@@ -5,4 +5,5 @@ text = "Tomato is important for ecosystem. Ecosystem no good without tomato. Hel
 
 hj = advanced.AdvancedTextAnalyzer(text)
 
+hj.Analyse_text()
 print(hj.calculate_sentence_similarity(hj.sentences[0], hj.sentences[1]))

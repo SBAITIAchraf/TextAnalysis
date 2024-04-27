@@ -6,6 +6,8 @@ from nltk.corpus import stopwords
 import string
 import math
 import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
 
 class AdvancedTextAnalyzer():
     def __init__(self,text):
@@ -124,6 +126,8 @@ class AdvancedTextAnalyzer():
     def Analyse_text(self):
             # initialisation du graphe
         graph = defaultdict(list)
+        print("I'm theeere")
+
         for i, sentence_i in enumerate(self.sentences):
             for j, sentence_j in enumerate(self.sentences):
                 if i != j:
@@ -132,9 +136,31 @@ class AdvancedTextAnalyzer():
                     #pour implementer cette fonction il nous faut tf et idf des mots dans cette phrase donc il faut qu'on fait un pre processing a la phrase pour supprimer stop wordq les mots neutres....
                 
     
-                    if similarity > 0.2:  # comment va t-on determiner les phraes adjoints dans le graph ,par excemple on met un seuil pour le score si le score depasse ce seuil alors on va connecter les deux nodesc a d les deux phrases
+                    if similarity > 0.001:  # comment va t-on determiner les phraes adjoints dans le graph ,par excemple on met un seuil pour le score si le score depasse ce seuil alors on va connecter les deux nodesc a d les deux phrases
                         graph[i].append((similarity ,j))
-    
+        
+        #Affichage du graph
+       
+        G = nx.DiGraph()
+
+        for node in range(len(self.sentences)):
+            G.add_node(node)
+
+           
+        print(graph.items())
+        for i, edges in graph.items():
+            for similarity, j in edges:
+                G.add_edge(i, j, weight=similarity)
+
+        # Afficher le graphique
+        pos = nx.spring_layout(G) 
+        nx.draw_networkx_nodes(G, pos, node_size=300)  # Dessiner les nœuds
+        nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5) 
+        nx.draw_networkx_labels(G, pos, font_size=10, font_family='sans-serif')  # Dessiner les étiquettes des nœuds
+        labels = nx.get_edge_attributes(G, 'weight')  
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)  
+        plt.show()
+
         return graph
 
     
