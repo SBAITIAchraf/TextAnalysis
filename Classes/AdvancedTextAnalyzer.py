@@ -9,6 +9,17 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
+class NodeInTheNetwork:
+    def __init__(self, node_id, eigenvector_centrality,phrase):
+        self.node_id = node_id
+        self.phrase=phrase
+        self.eigenvector_centrality = eigenvector_centrality
+       
+
+
+
+
 class AdvancedTextAnalyzer():
     def __init__(self,text):
         self.__text=re.sub(r'\s+', ' ', text)
@@ -124,30 +135,37 @@ class AdvancedTextAnalyzer():
 
 
     def Analyse_text(self):
-            # initialisation du graphe
-        graph = defaultdict(list)
-        print("I'm theeere")
-
-        for i, sentence_i in enumerate(self.sentences):
-            for j, sentence_j in enumerate(self.sentences):
-                if i != j:
-                # Il faut qu'on implemente cette fonction nommée calculate..... pour calculer similarity entre deux phrases en se basant sur l'une des méthodes
-                    similarity = self.calculate_sentence_similarity(sentence_i, sentence_j)
-                    #pour implementer cette fonction il nous faut tf et idf des mots dans cette phrase donc il faut qu'on fait un pre processing a la phrase pour supprimer stop wordq les mots neutres....
-                
-    
-                    if similarity > 0.001:  # comment va t-on determiner les phraes adjoints dans le graph ,par excemple on met un seuil pour le score si le score depasse ce seuil alors on va connecter les deux nodesc a d les deux phrases
-                        graph[i].append((similarity ,j))
-        
-        #Affichage du graph
-       
         G = nx.DiGraph()
-
+        # Initialize the graph with nodes
         for node in range(len(self.sentences)):
             G.add_node(node)
 
-           
-        print(graph.items())
+        # Calculate the sentence similarity and construct the graph
+        graph = defaultdict(list)
+        for i, sentence_i in enumerate(self.sentences):
+            for j, sentence_j in enumerate(self.sentences):
+                if i != j:
+                    similarity = self.calculate_sentence_similarity(sentence_i, sentence_j)
+                    graph[i].append((similarity, j))
+
+        # Calculate eigenvector centrality after constructing the graph
+        eigenvector_centralities = nx.eigenvector_centrality_numpy(G)
+        print(eigenvector_centralities)
+
+        # Create instances of NodeInTheNetwork and sort them
+        nodes_in_the_network = []
+        for node in range(len(self.sentences)):
+            nod = NodeInTheNetwork(node, eigenvector_centralities[node], self.__sentences[node])
+            nodes_in_the_network.append(nod)
+        sorted_nodes = sorted(nodes_in_the_network, key=lambda node: node.eigenvector_centrality)
+
+        # Print the phrases sorted by eigenvector centrality
+        #I have a question how much of phrases we should output I said n/2
+        for n in sorted_nodes:
+            print(n.phrase)
+       
+
+
         for i, edges in graph.items():
             for similarity, j in edges:
                 G.add_edge(i, j, weight=similarity)
