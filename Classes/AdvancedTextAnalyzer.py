@@ -177,7 +177,7 @@ class AdvancedTextAnalyzer():
 
 
 
-    def Analyse_text(self):
+    def Analyse_text(self,p):
         G = nx.DiGraph()
         # Initialize the graph with nodes
         for node in range(len(self.sentences)):
@@ -204,7 +204,7 @@ class AdvancedTextAnalyzer():
 
         # Print the phrases sorted by eigenvector centrality
         #I have a question how much of phrases we should output I said n/2
-        for n in sorted_nodes:
+        for n in sorted_nodes[:p]:
             print(n.node_id)
        
 
