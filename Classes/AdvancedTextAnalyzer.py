@@ -21,10 +21,18 @@ class NodeInTheNetwork:
 
 
 class AdvancedTextAnalyzer():
+
+    languages = {"ar": "arabic",
+                    "en": "english",
+                    "fr": "french"}
+
     def __init__(self,text):
+
+        
         self.__text=re.sub(r'\s+', ' ', text)
         #Extraction des phrases cette méthode de split en donnant le pattern je l'ai testé ça marche
         self.__sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', self.text)
+        self.__lang = self.languages[detect(text)]
         self.__Idf = self.calculateIdf(self.__sentences)
 
     #Getters
@@ -37,17 +45,34 @@ class AdvancedTextAnalyzer():
     @property
     def Idf(self):
         return self.__Idf
+    @property
+    def lang(self):
+        return self.__lang
 
     #Check if wor is stopWord
     def isStop(self, word):
-        nltk.download("stopwords")
-        stp_word = set(stopwords.words("english"))
+        stp_word = set(stopwords.words(self.__lang))
 
         if word.lower() in stp_word:
             return True
         else:
             return False
         
+    def check_word(self, word):
+
+        if len(word) != 0:
+
+            if word[-1] in string.punctuation:
+                word = word[:-1]
+
+            if word[0] in string.punctuation:
+                word = word[1:]
+
+            # Rendre tous les lettres en minuscule
+            word = word.lower()
+            if not self.isStop(word):
+                return True
+        return False
     def tf(self, terme, sentence):
         lowr_sntce = sentence.lower()
         lwr_terme = terme.lower()
@@ -66,23 +91,26 @@ class AdvancedTextAnalyzer():
             words = sentences[i].split(" ")
             for word in words:
 
-                #Enlever la ponctuation
-                if word[-1] in string.punctuation:
-                    word = word[:-1]
+                if len(word) != 0:
 
-                # Rendre tous les lettres en minuscule
-                word = word.lower()
-                
-                if not self.isStop(word):
-                    if word not in freq:
-                        freq[word] = 1
+                    if word[-1] in string.punctuation:
+                        word = word[:-1]
 
-                        # Calculer le nembre de phrases contenant word
-                        for j in range(len(sentences)):
-                            if j!=i:
-                                lowr_sntnce = sentences[j].lower()
-                                if word in lowr_sntnce:
-                                    freq[word] +=1
+                    if word[0] in string.punctuation:
+                        word = word[1:]
+
+                    # Rendre tous les lettres en minuscule
+                    word = word.lower()
+                    if not self.isStop(word):
+                        if word not in freq:
+                            freq[word] = 1
+
+                            # Calculer le nembre de phrases contenant word
+                            for j in range(len(sentences)):
+                                if j!=i:
+                                    lowr_sntnce = sentences[j].lower()
+                                    if word in lowr_sntnce:
+                                        freq[word] +=1
         #Calcule de IDF
         for word in freq:
             word = word.lower()
@@ -99,14 +127,22 @@ class AdvancedTextAnalyzer():
         passed = set()
 
         for word in words1+words2:
-            if not self.isStop(word):
-                #Enlever la ponctuation
+
+            if len(word) != 0:
+
                 if word[-1] in string.punctuation:
                     word = word[:-1]
 
-                if not word in passed:
-                    score += self.tf(word, phrase1)*self.tf(word, phrase2)*(self.Idf[word])**2
-                    passed.add(word)
+                if word[0] in string.punctuation:
+                    word = word[1:]
+
+                # Rendre tous les lettres en minuscule
+                word = word.lower()
+                if not self.isStop(word):
+
+                    if not word in passed:
+                        score += self.tf(word, phrase1)*self.tf(word, phrase2)*(self.Idf[word])**2
+                        passed.add(word)
         return score
 
     def norme(self, phrase):
@@ -114,12 +150,19 @@ class AdvancedTextAnalyzer():
         words = phrase.lower().split(" ")
 
         for word in words:
-            if not self.isStop(word):
-                #Enlever la ponctuation
+            if len(word) != 0:
+
                 if word[-1] in string.punctuation:
                     word = word[:-1]
 
-                score += (self.tf(word, phrase)*self.Idf[word])**2
+                if word[0] in string.punctuation:
+                    word = word[1:]
+
+                # Rendre tous les lettres en minuscule
+                word = word.lower()
+                if not self.isStop(word):
+
+                    score += (self.tf(word, phrase)*(self.Idf[word])**2)
 
         return math.sqrt(score)
 
@@ -162,7 +205,7 @@ class AdvancedTextAnalyzer():
         # Print the phrases sorted by eigenvector centrality
         #I have a question how much of phrases we should output I said n/2
         for n in sorted_nodes:
-            print(n.phrase)
+            print(n.node_id)
        
 
 
