@@ -58,6 +58,7 @@ class AdvancedTextAnalyzer():
         else:
             return False
         
+    
     def check_word(self, word):
 
         if len(word) != 0:
@@ -71,8 +72,8 @@ class AdvancedTextAnalyzer():
             # Rendre tous les lettres en minuscule
             word = word.lower()
             if not self.isStop(word):
-                return True
-        return False
+                return word, True
+        return word, False
     def tf(self, terme, sentence):
         lowr_sntce = sentence.lower()
         lwr_terme = terme.lower()
@@ -91,26 +92,17 @@ class AdvancedTextAnalyzer():
             words = sentences[i].split(" ")
             for word in words:
 
-                if len(word) != 0:
+                word, is_clear = self.check_word(word)
+                if is_clear:
+                    if word not in freq:
+                        freq[word] = 1
 
-                    if word[-1] in string.punctuation:
-                        word = word[:-1]
-
-                    if word[0] in string.punctuation:
-                        word = word[1:]
-
-                    # Rendre tous les lettres en minuscule
-                    word = word.lower()
-                    if not self.isStop(word):
-                        if word not in freq:
-                            freq[word] = 1
-
-                            # Calculer le nembre de phrases contenant word
-                            for j in range(len(sentences)):
-                                if j!=i:
-                                    lowr_sntnce = sentences[j].lower()
-                                    if word in lowr_sntnce:
-                                        freq[word] +=1
+                        # Calculer le nembre de phrases contenant word
+                        for j in range(len(sentences)):
+                            if j!=i:
+                                lowr_sntnce = sentences[j].lower()
+                                if word in lowr_sntnce:
+                                    freq[word] +=1
         #Calcule de IDF
         for word in freq:
             word = word.lower()
@@ -128,21 +120,11 @@ class AdvancedTextAnalyzer():
 
         for word in words1+words2:
 
-            if len(word) != 0:
-
-                if word[-1] in string.punctuation:
-                    word = word[:-1]
-
-                if word[0] in string.punctuation:
-                    word = word[1:]
-
-                # Rendre tous les lettres en minuscule
-                word = word.lower()
-                if not self.isStop(word):
-
-                    if not word in passed:
-                        score += self.tf(word, phrase1)*self.tf(word, phrase2)*(self.Idf[word])**2
-                        passed.add(word)
+            word, is_clear = self.check_word(word)
+            if is_clear:
+                if not word in passed:
+                    score += self.tf(word, phrase1)*self.tf(word, phrase2)*(self.Idf[word])**2
+                    passed.add(word)
         return score
 
     def norme(self, phrase):
@@ -150,19 +132,10 @@ class AdvancedTextAnalyzer():
         words = phrase.lower().split(" ")
 
         for word in words:
-            if len(word) != 0:
+            word, is_clear = self.check_word(word)
+            if is_clear:
 
-                if word[-1] in string.punctuation:
-                    word = word[:-1]
-
-                if word[0] in string.punctuation:
-                    word = word[1:]
-
-                # Rendre tous les lettres en minuscule
-                word = word.lower()
-                if not self.isStop(word):
-
-                    score += (self.tf(word, phrase)*(self.Idf[word])**2)
+                score += (self.tf(word, phrase)*(self.Idf[word])**2)
 
         return math.sqrt(score)
 

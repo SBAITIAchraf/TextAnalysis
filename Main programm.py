@@ -8,4 +8,4 @@ text = """L’´electromagn´etisme est un domaine captivant de la physique, eng
 Au cœur de l’´electromagn´etisme se trouvent les ´equations de Maxwell, un ensemble de quatre ´equations qui d´efinissent avec pr´ecision les champs ´electrique et magn´etique. Bien que ces ´equations impliquent des op´erateurs vectoriels, qui peuvent paraˆıtre intimidants de prime abord, ils sont essentiels et ne doivent ˆetre vus que comme des outils math´ematiques parmi d’autres. Le premier chapitre de ce cours est d´edi´e `a la description de ces op´erateurs vectoriels et `a un rappel de certaines de leurs propri´et´es fondamentales."""
 
 hj = advanced(text)
-print(hj.lang)
+important_sentences = hj.Analyse_text(2)
